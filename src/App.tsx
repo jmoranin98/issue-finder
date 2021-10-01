@@ -6,7 +6,6 @@ import { createGlobalStyle } from 'styled-components';
 import {
   AppRootContent,
   Filters,
-  LanguagesSelectWrapper,
   Title,
 } from './styles';
 import { IssueCard } from './components/IssueCard/IssueCards';
@@ -56,23 +55,6 @@ function App() {
     setIsLoading(false);
   };
 
-  const handlePageChange = async (page: number) => {
-    setIsLoading(true);
-
-    const { issues, count } = await fetchIssues({
-      query: queryText,
-      languages: [selectedLanguage],
-      page,
-    });
-    setIssuesFound(issues);
-    setPagination({
-      page,
-      count,
-    });
-
-    setIsLoading(false);
-  };
-
   return (
     <>
       <GlobalStyle/>
@@ -99,6 +81,7 @@ function App() {
               <IssueCard issue={issue} />
             ))
         }
+        <p>Page {pagination.page}</p>
       </AppRootContent>
     </>
   );

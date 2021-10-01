@@ -10,7 +10,7 @@ export const IssueCard: FC<IIssueCardProps> = ({ issue }) => {
   return (
     <RootElement>
       <h1>
-        <a href={issue.htmlUrl} target='_blank'>{issue.title}</a>
+        <a href={issue.htmlUrl} target='_blank' rel='noopener noreferrer'>{issue.title}</a>
       </h1>
       <div style={{ overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: issue.body }}>
       </div>
