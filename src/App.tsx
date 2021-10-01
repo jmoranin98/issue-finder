@@ -1,25 +1,106 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { FormEvent, useState } from 'react';
+import { fetchIssues } from './api';
+import { languages } from './constants/languages';
+import { Issue } from './types/issues';
+import { createGlobalStyle } from 'styled-components';
+import {
+  AppRootContent,
+  Filters,
+  LanguagesSelectWrapper,
+  Title,
+} from './styles';
+import { IssueCard } from './components/IssueCard/IssueCards';
+
+const GlobalStyle = createGlobalStyle`
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  ul { list-style: none; }
+  a { text-decoration: none; }
+`;
 
 function App() {
+  const [queryText, setQueryText] = useState<string>('');
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [issuesFound, setIssuesFound] = useState<Array<Issue>>([]);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    count: 1,
+  });
+
+  const handleQueryChange = (e: any) => setQueryText(e.target.value);
+
+  const handleSelectLanguage = (e: any) => {
+    setSelectedLanguage(e.target.value);
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    setIsLoading(true);
+
+    const { issues, count } = await fetchIssues({
+      query: queryText,
+      languages: [selectedLanguage],
+      page: 1,
+    });
+    setIssuesFound(issues);
+    setPagination({
+      page: 1,
+      count,
+    });
+
+    setIsLoading(false);
+  };
+
+  const handlePageChange = async (page: number) => {
+    setIsLoading(true);
+
+    const { issues, count } = await fetchIssues({
+      query: queryText,
+      languages: [selectedLanguage],
+      page,
+    });
+    setIssuesFound(issues);
+    setPagination({
+      page,
+      count,
+    });
+
+    setIsLoading(false);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <GlobalStyle/>
+      <AppRootContent>
+        <Title>Issue Finder</Title>
+        <Filters onSubmit={handleSubmit}>
+          <input type="text" value={queryText} onChange={handleQueryChange} />
+          <select name="" id="" value={selectedLanguage} onChange={handleSelectLanguage}>
+            {languages.map((l, index) => (
+              <option
+                key={`language-${index}`}
+                value={l}
+              >{l}</option>
+            ))}
+          </select>
+          <button type="submit">
+            Buscar
+          </button>
+        </Filters>
+        {
+          isLoading ?
+            <p>Cargando</p> :
+            issuesFound.map(issue => (
+              <IssueCard issue={issue} />
+            ))
+        }
+      </AppRootContent>
+    </>
   );
 }
 
