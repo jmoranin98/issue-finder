@@ -13,6 +13,7 @@ export const Title = styled.h1`
   letter-spacing: -1.5px;
   margin-bottom: 1rem;
   line-height: 4rem;
+  color: #6c42eb;
 `;
 
 export const Filters = styled.form`

@@ -9,6 +9,7 @@ import {
   Title,
 } from './styles';
 import { IssueCard } from './components/IssueCard/IssueCards';
+import { Pagination } from './components/Pagination/Pagination';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -55,6 +56,23 @@ function App() {
     setIsLoading(false);
   };
 
+  const handlePageChange = (page: number) => async () => {
+    setIsLoading(true);
+
+    const { issues, count } = await fetchIssues({
+      query: queryText,
+      languages: [selectedLanguage],
+      page,
+    });
+    setIssuesFound(issues);
+    setPagination({
+      page,
+      count,
+    });
+
+    setIsLoading(false);
+  }
+
   return (
     <>
       <GlobalStyle/>
@@ -81,7 +99,12 @@ function App() {
               <IssueCard issue={issue} />
             ))
         }
-        <p>Page {pagination.page}</p>
+        <Pagination
+          count={pagination.count}
+          page={pagination.page}
+          onNextClick={handlePageChange(pagination.page + 1)}
+          onPreviousClick={handlePageChange(pagination.page - 1)}
+        />
       </AppRootContent>
     </>
   );
