@@ -19,7 +19,7 @@ export const Title = styled.h1`
 export const Filters = styled.form`
   margin-bottom: 2rem;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: .5rem;
   flex-wrap: wrap;
 `;

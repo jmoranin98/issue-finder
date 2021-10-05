@@ -64,6 +64,7 @@ export interface Issue {
 export interface IFetchIssuesParams {
   query: string;
   languages: Array<string>;
+  labels: Array<string>;
   page: number;
   perPage?: number;
   sort?: 'created';

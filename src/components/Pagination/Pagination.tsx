@@ -3,14 +3,14 @@ import { Button } from "../Button/Button";
 import { ActionsContainer, Text, RootElement } from "./styles";
 
 interface IPaginationProps {
-  count: number;
+  totalPages: number;
   page: number;
   onNextClick(): void;
   onPreviousClick(): void;
 }
 
 export const Pagination: FC<IPaginationProps> = ({
-  count,
+  totalPages,
   page,
   onNextClick,
   onPreviousClick,
@@ -19,7 +19,7 @@ export const Pagination: FC<IPaginationProps> = ({
   return (
     <RootElement>
       <div>
-        <Text>Página {page} de {count}</Text>
+        <Text>Página {page} de {totalPages}</Text>
       </div>
       <ActionsContainer>
         {
@@ -29,7 +29,7 @@ export const Pagination: FC<IPaginationProps> = ({
           </Button>
         }
         {
-          page !== count &&
+          page !== totalPages &&
           <Button onClick={onNextClick}>
             Siguiente
           </Button>

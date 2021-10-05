@@ -11,6 +11,10 @@ import {
 } from './styles';
 import { IssueCard } from './components/IssueCard/IssueCards';
 import { Pagination } from './components/Pagination/Pagination';
+import { labels } from './constants/labels';
+import { Button } from './components/Button/Button';
+import { Input } from './components/Input/Input';
+import { MultiSelect } from './components/MultiSelect/MultiSelect';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -20,23 +24,21 @@ const GlobalStyle = createGlobalStyle`
   }
   ul { list-style: none; }
   a { text-decoration: none; }
+  label { font-family: 'Poppins', sans-serif; }
 `;
 
 function App() {
   const [queryText, setQueryText] = useState<string>('');
-  const [selectedLanguage, setSelectedLanguage] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [issuesFound, setIssuesFound] = useState<Array<Issue>>([]);
+  const [selectedLabels, setSelectedLabels] = useState<Array<string>>([]);
+  const [selectedLanguages, setSelectedLanguages] = useState<Array<string>>([]);
   const [pagination, setPagination] = useState({
     page: 1,
     count: 1,
   });
 
   const handleQueryChange = (e: any) => setQueryText(e.target.value);
-
-  const handleSelectLanguage = (e: any) => {
-    setSelectedLanguage(e.target.value);
-  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -45,7 +47,8 @@ function App() {
 
     const { issues, count } = await fetchIssues({
       query: queryText,
-      languages: [selectedLanguage],
+      languages: selectedLanguages,
+      labels: selectedLabels,
       page: 1,
     });
     setIssuesFound(issues);
@@ -62,7 +65,8 @@ function App() {
 
     const { issues, count } = await fetchIssues({
       query: queryText,
-      languages: [selectedLanguage],
+      languages: selectedLanguages,
+      labels: selectedLabels,
       page,
     });
     setIssuesFound(issues);
@@ -72,7 +76,7 @@ function App() {
     });
 
     setIsLoading(false);
-  }
+  };
 
   return (
     <>
@@ -80,18 +84,29 @@ function App() {
       <AppRootContent>
         <Title>Issue Finder</Title>
         <Filters onSubmit={handleSubmit}>
-          <input type="text" value={queryText} onChange={handleQueryChange} />
-          <select name="" id="" value={selectedLanguage} onChange={handleSelectLanguage}>
-            {languages.map((l, index) => (
-              <option
-                key={`language-${index}`}
-                value={l}
-              >{l}</option>
-            ))}
-          </select>
-          <button type="submit">
+          <div>
+            <label>Search</label>
+            <Input type="text" value={queryText} onChange={handleQueryChange} />
+          </div>
+          <div>
+            <label>Labels</label>
+            <MultiSelect
+              items={labels.map(label => ({ value: label, label }))}
+              onChange={labels => setSelectedLabels(labels)}
+              selectedValues={selectedLabels}
+            />
+          </div>
+          <div>
+            <label>Languages</label>
+            <MultiSelect
+              items={languages.map(language => ({ value: language, label: language }))}
+              onChange={languages => setSelectedLanguages(languages)}
+              selectedValues={selectedLanguages}
+            />
+          </div>
+          <Button type="submit">
             Buscar
-          </button>
+          </Button>
         </Filters>
         {
           isLoading ?
@@ -105,7 +120,7 @@ function App() {
                   ))}
                 </IssuesContent>
                 <Pagination
-                  count={pagination.count}
+                  totalPages={Math.ceil(pagination.count / 20)}
                   page={pagination.page}
                   onNextClick={handlePageChange(pagination.page + 1)}
                   onPreviousClick={handlePageChange(pagination.page - 1)}

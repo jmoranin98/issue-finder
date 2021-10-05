@@ -18,10 +18,12 @@ const converter = new Converter();
 
 const buildFetchIssuesParams = (params: IFetchIssuesParams):GHFetchIssuesParams => {
   const inLineLanguages = params.languages.map(language => (
-    language.toLowerCase().replace(' ', '-')
-  )).join(',');
+    `+language:${language.toLowerCase().replace(' ', '-')}`
+  )).join('');
 
-  const finalQuery = `${params.query}+type:issue+language:${inLineLanguages}+state:open`;
+  const inlineLabels = params.labels.map(label => `+label:${label}`).join('');
+
+  const finalQuery = `${params.query}+type:issue${inlineLabels}${inLineLanguages}+state:open`;
 
   return {
     q: finalQuery,
