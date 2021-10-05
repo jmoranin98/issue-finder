@@ -1,6 +1,7 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { Issue } from '../../types/issues';
 import {
+  AvataImage,
   BodyContent,
   BodyContentContainer,
   ExpandButton,
@@ -11,7 +12,6 @@ import {
   IssueTitle,
   RootElement
 } from './styles';
-import dayjs from 'dayjs';
 
 interface IIssueCardProps {
   issue: Issue;
@@ -25,8 +25,8 @@ export const IssueCard: FC<IIssueCardProps> = ({ issue }) => {
   useEffect(() => {
     if (contentEl.current) {
       const element: any = contentEl.current;
-      console.log(element.clientHeight);
-      if (element.clientHeight > 120) {
+
+      if (element.clientHeight > 88) {
         setCanOpen(true);
       }
     }
@@ -36,6 +36,7 @@ export const IssueCard: FC<IIssueCardProps> = ({ issue }) => {
     <RootElement>
       <IssueHeaderContainer>
         <IssueTitle>
+          <AvataImage src={issue.user.avatarUrl} alt="" />
           <IssueLink href={issue.htmlUrl} target='_blank' rel='noopener noreferrer'>{issue.title}</IssueLink>
         </IssueTitle>
         <IssueComments>
@@ -43,22 +44,26 @@ export const IssueCard: FC<IIssueCardProps> = ({ issue }) => {
         </IssueComments>
       </IssueHeaderContainer>
 
-      <BodyContentContainer expanded={fullHeight}>
-        {
-          canOpen &&
-          <ExpandButton
-            onClick={() => setFullHeight(!fullHeight)}
-          >
-            {fullHeight ? 'Ver menos' : 'Ver más'}
-          </ExpandButton>
-        }
-        <BodyContent
-          ref={contentEl}
-          dangerouslySetInnerHTML={{ __html: issue.body }}
-        />
-      </BodyContentContainer>
+      {
+        issue.body ?
+        <BodyContentContainer expanded={fullHeight}>
+          {
+            canOpen &&
+            <ExpandButton
+              onClick={() => setFullHeight(!fullHeight)}
+            >
+              {fullHeight ? 'Ver menos' : 'Ver más'}
+            </ExpandButton>
+          }
+          <BodyContent
+            ref={contentEl}
+            dangerouslySetInnerHTML={{ __html: issue.body }}
+          />
+        </BodyContentContainer> :
+        <p>Description not available</p>
+      }
       <HelperText>
-        Opened by {issue.user.login} at {dayjs(issue.updatedAt).format('MM/DD/YY')}
+        {issue.repository.name} - {issue.humanDate}
       </HelperText>
     </RootElement>
   );

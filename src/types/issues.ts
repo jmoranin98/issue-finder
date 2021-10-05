@@ -3,8 +3,9 @@ export interface GHIssue {
   title: string;
   comments: number;
   assignees: Array<any>;
-  body: string;
+  body: string | null;
   comments_url: string;
+  repository_url: string;
   created_at: Date;
   updated_at: Date;
   html_url: string;
@@ -37,10 +38,15 @@ export interface Issue {
   title: string;
   comments: number;
   assignees: Array<any>;
-  body: string;
+  body: string | null;
   commentsUrl: string;
+  repository: {
+    url: string;
+    name: string;
+  };
   createdAt: Date;
   updatedAt: Date;
+  humanDate: string;
   htmlUrl: string;
   reactions: Array<any>;
   labels: Array<{

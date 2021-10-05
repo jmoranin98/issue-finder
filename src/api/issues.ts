@@ -9,6 +9,10 @@ import {
 } from '../types/issues';
 import { Converter } from 'showdown';
 import DOMPurify from 'dompurify';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
 
 const converter = new Converter();
 
@@ -44,18 +48,23 @@ export const fetchIssues = async (params: IFetchIssuesParams): Promise<IFetchIss
     title: item.title,
     comments: item.comments,
     assignees: item.assignees,
-    body: DOMPurify.sanitize(converter.makeHtml(item.body)),
+    body: item.body ? DOMPurify.sanitize(converter.makeHtml(item.body)) : null,
     commentsUrl: item.comments_url,
     createdAt: item.created_at,
     updatedAt: item.updated_at,
     htmlUrl: item.html_url,
     reactions: item.reactions,
     labels: item.labels,
+    humanDate: dayjs(item.created_at).fromNow(),
     user: {
       avatarUrl: item.user.avatar_url,
       htmlUrl: item.user.html_url,
       login: item.user.login,
     },
+    repository: {
+      url: item.repository_url,
+      name: item.repository_url.split('repos/')[1],
+    }
   }));
 
   return {
