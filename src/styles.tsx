@@ -27,3 +27,9 @@ export const Filters = styled.form`
 export const LanguagesSelectWrapper = styled.div`
   width: 15rem;
 `;
+
+export const IssuesContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;

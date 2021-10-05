@@ -6,6 +6,7 @@ import { createGlobalStyle } from 'styled-components';
 import {
   AppRootContent,
   Filters,
+  IssuesContent,
   Title,
 } from './styles';
 import { IssueCard } from './components/IssueCard/IssueCards';
@@ -75,7 +76,7 @@ function App() {
 
   return (
     <>
-      <GlobalStyle/>
+      <GlobalStyle />
       <AppRootContent>
         <Title>Issue Finder</Title>
         <Filters onSubmit={handleSubmit}>
@@ -94,17 +95,23 @@ function App() {
         </Filters>
         {
           isLoading ?
-            <p>Cargando</p> :
-            issuesFound.map(issue => (
-              <IssueCard issue={issue} />
-            ))
+            <p>Cargando...</p> :
+            issuesFound.length === 0 ?
+              <p>No se encontron issues</p> :
+              (<>
+                <IssuesContent>
+                  {issuesFound.map(issue => (
+                    <IssueCard key={issue.id} issue={issue} />
+                  ))}
+                </IssuesContent>
+                <Pagination
+                  count={pagination.count}
+                  page={pagination.page}
+                  onNextClick={handlePageChange(pagination.page + 1)}
+                  onPreviousClick={handlePageChange(pagination.page - 1)}
+                />
+              </>)
         }
-        <Pagination
-          count={pagination.count}
-          page={pagination.page}
-          onNextClick={handlePageChange(pagination.page + 1)}
-          onPreviousClick={handlePageChange(pagination.page - 1)}
-        />
       </AppRootContent>
     </>
   );

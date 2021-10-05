@@ -1,4 +1,5 @@
 export interface GHIssue {
+  id: number;
   title: string;
   comments: number;
   assignees: Array<any>;
@@ -32,6 +33,7 @@ export interface IFetchIssuesResult {
 }
 
 export interface Issue {
+  id: number;
   title: string;
   comments: number;
   assignees: Array<any>;

@@ -40,6 +40,7 @@ export const fetchIssues = async (params: IFetchIssuesParams): Promise<IFetchIss
   } = data;
 
   const formattedIssues: Array<Issue> = items.map(item => ({
+    id: item.id,
     title: item.title,
     comments: item.comments,
     assignees: item.assignees,

@@ -11,4 +11,9 @@ export const Button = styled.button`
   color: #6c42eb;
   text-transform: uppercase;
   cursor: pointer;
+  transition: 200ms ease-in-out;
+
+  &:hover {
+    background-color: rgba(108, 66, 235,0.1);
+  }
 `;
