@@ -1,5 +1,13 @@
-import { FC, useState } from "react";
-import { CheckboxLabel, ItemsList, MultiSelectRoot, SelectItem, TextBox, TextBoxContent } from "./styles";
+import { FC, useRef, useState } from "react";
+import useOutsideClick from "../../hooks/useOutsideClick";
+import {
+  CheckboxLabel,
+  ItemsList,
+  MultiSelectRoot,
+  SelectItem,
+  TextBox,
+  TextBoxContent,
+} from "./styles";
 
 interface ItemValue {
   value: string;
@@ -18,6 +26,7 @@ export const MultiSelect: FC<IMultiSelectProps> = ({
   onChange,
 }) => {
   const [openList, setOpenList] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const selectedItems = items.filter(i => selectedValues.includes(i.value))
     .map(i => i.label).join(', ');
@@ -34,10 +43,18 @@ export const MultiSelect: FC<IMultiSelectProps> = ({
     }
 
     onChange(newValues);
-  }
+  };
+
+  useOutsideClick(
+    wrapperRef,
+    () => {
+      setOpenList(false);
+    },
+    openList
+  );
 
   return (
-    <MultiSelectRoot>
+    <MultiSelectRoot ref={wrapperRef}>
       <TextBox onClick={() => setOpenList(!openList)}>
         <TextBoxContent>{selectedItems}</TextBoxContent>
       </TextBox>
