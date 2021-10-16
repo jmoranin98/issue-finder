@@ -1,7 +1,10 @@
-import { FC, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
+import { useDebounce } from "../../hooks/useDebounce";
 import useOutsideClick from "../../hooks/useOutsideClick";
 import {
   CheckboxLabel,
+  DropdownInput,
+  DropdownList,
   ItemsList,
   MultiSelectRoot,
   SelectItem,
@@ -26,10 +29,33 @@ export const MultiSelect: FC<IMultiSelectProps> = ({
   onChange,
 }) => {
   const [openList, setOpenList] = useState(false);
+  const [searchValue, setSearchValue] = useState<string>('');
+  const debouncedSearchValue = useDebounce(searchValue, 200);
+  const [filteredItems, setFilteredItems] = useState<Array<ItemValue>>(items);
+
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const selectedItems = items.filter(i => selectedValues.includes(i.value))
     .map(i => i.label).join(', ');
+
+  useEffect(() => {
+    if (debouncedSearchValue === '') {
+      setFilteredItems(items);
+    } else {
+      const filteredListItems = items.filter(item => (
+        item.value.toLowerCase()
+          .includes(debouncedSearchValue.toLowerCase())
+      ));
+
+      setFilteredItems(filteredListItems);
+    }
+  }, [debouncedSearchValue, items]);
+
+  useEffect(() => {
+    if (!openList) {
+      setSearchValue('');
+    }
+  }, [openList]);
 
   const handleChange = (value: string) => () => {
     let newValues = [...selectedValues];
@@ -47,22 +73,26 @@ export const MultiSelect: FC<IMultiSelectProps> = ({
 
   useOutsideClick(
     wrapperRef,
-    () => {
-      setOpenList(false);
-    },
+    () => setOpenList(false),
     openList
   );
 
   return (
     <MultiSelectRoot ref={wrapperRef}>
-      <TextBox onClick={() => setOpenList(!openList)}>
+      <TextBox open={openList} onClick={() => setOpenList(!openList)}>
         <TextBoxContent>{selectedItems}</TextBoxContent>
       </TextBox>
-      {
-        openList &&
+      <DropdownList open={openList}>
+        <DropdownInput
+          value={searchValue}
+          onChange={e => setSearchValue(e.target.value)}
+        />
         <ItemsList>
-          {items.map(item => (
-            <SelectItem onClick={handleChange(item.label)}>
+          {filteredItems.map(item => (
+            <SelectItem
+              key={`option-${item.label}`}
+              onClick={handleChange(item.label)}
+            >
               <input
                 type="checkbox"
                 checked={selectedValues.indexOf(item.value) !== -1}
@@ -74,7 +104,7 @@ export const MultiSelect: FC<IMultiSelectProps> = ({
             </SelectItem>
           ))}
         </ItemsList>
-      }
+      </DropdownList>
     </MultiSelectRoot>
   );
 };
